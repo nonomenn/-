@@ -1,0 +1,25 @@
+{
+  "name": "mensetsu-yoyaku",
+  "version": "1.0.0",
+  "private": true,
+  "description": "個人用 面談予約管理アプリ（公式LINE予約 → Googleカレンダー自動登録 → 固定Zoomリンク送信）",
+  "scripts": {
+    "dev": "netlify dev",
+    "dev:vite": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@netlify/functions": "^2.8.1",
+    "@supabase/supabase-js": "^2.45.4",
+    "googleapis": "^144.0.0",
+    "lucide-react": "^0.400.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "resend": "^4.0.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.8"
+  }
+}
