@@ -70,7 +70,7 @@ scripts/make_short.sh <input.mp4> <開始> <終了> <output.mp4> "<見出し1>" 
 scripts/concat_clips.sh <input.mp4> <output.mp4> "<開始秒> <終了秒>" "<開始秒> <終了秒>" ...   # 複数の名場面をつなぐ
 # 例: scripts/make_short.sh input/abc123.mp4 00:03:12 00:04:00 output/abc123_0312.mp4 "なぜルフィは" "最強チームを作る" "天才なのか？"
 ```
-必要: ffmpeg, yt-dlp, 日本語太字フォント(環境変数FONTで指定可)
+必要: ffmpeg, yt-dlp, python3(pillow, faster-whisper)。Macは `./setup_mac.sh` で一括インストール
 
 ## 注意
 - `input/` `output/` はgit管理しない
