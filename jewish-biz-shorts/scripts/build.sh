@@ -8,10 +8,12 @@ H=(); TAG=""
 for a in "$@"; do case "$a" in \#*) TAG="$a";; *) H+=("$a");; esac; done
 IFS='|' read -r -a S <<< "$SEGS"
 mkdir -p output
-scripts/concat_clips.sh "input/$K.mp4" "input/_$N.mp4" "${S[@]}" >/dev/null
+scripts/concat_clips.sh "input/$K.mp4" "input/_$N.mp4" "${S[@]}"
+python3 scripts/check_short.py "input/_$N.mp4" || echo "★ $N: 一瞬映るシーンあり。区間を調整してください" >&2
 D="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "input/_$N.mp4")"
 scripts/make_short.sh "input/_$N.mp4" 0 "$D" "output/$N.mp4" "${H[@]}" >/dev/null
 rm -f "input/_$N.mp4"
+[ -n "${NOLOG:-}" ] && { echo "OK output/$N.mp4"; exit 0; }
 FIRST="$(echo "${S[0]}" | cut -d' ' -f1 | cut -d. -f1)"
 HEAD_ONE="$(printf "%s" "${H[@]}")"
 cat > "output/$N.txt" <<E
