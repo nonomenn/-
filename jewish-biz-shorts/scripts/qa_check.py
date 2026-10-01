@@ -3,7 +3,7 @@
 2回目のチェックは、ここで書き出すコマ画像(output/qa/)を自分の目で見て行う。
 使い方: python3 scripts/qa_check.py <開始番号> <終了番号>
 問題が1つでもあれば終了コード1。"""
-import sys, os, re, json, glob, subprocess, urllib.request, urllib.parse, warnings
+import sys, os, re, json, glob, subprocess, urllib.request, urllib.parse, warnings, unicodedata
 warnings.filterwarnings("ignore")
 from PIL import Image, ImageDraw
 
@@ -105,7 +105,7 @@ for f in files:
         if "youtu.be/" not in t: W("概要欄の本編URLが未確定(要確認)")
     if c[2].startswith("http"):
         got = oembed_title(c[2])
-        norm = lambda x: re.sub(r"[#＃].*$", "", x or "").strip()
+        norm = lambda x: re.sub(r"[#＃].*$", "", unicodedata.normalize("NFKC", x or "")).strip()
         if norm(got) != norm(c[1]): E(f"本編URLのタイトルがログと違う: YouTube「{got}」/ ログ「{c[1]}」")
     else:
         W("本編URLが未確定")
