@@ -72,6 +72,9 @@ for f in files:
     head = mid.crop((0, 250, 1080, 690))
     if white_ratio(head) < 0.01 or gold_ratio(head) < 0.02: E("見出し(白文字+金の帯)が見当たらない")
     if gold_ratio(mid.crop((0, 712, 1080, 720))) < 0.3: E("動画の金縁が見当たらない")
+    # 冒頭が真っ黒(暗転・黒背景の演出)だと最初の3秒の引きが死ぬ
+    first = frame(f, 0.05).crop((0, 716, 1080, 1324)).convert("L")
+    if sum(first.getdata()) / (first.width * first.height) < 20: E("冒頭が真っ黒(暗転)。人が映っている所から始めること")
     # 終了カード(最後の1秒)
     end = frame(f, dur - 1.0)
     area = end.crop((0, 720, 1080, 1320))
