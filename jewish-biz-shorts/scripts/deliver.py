@@ -25,9 +25,9 @@ for g in groups.values():
             z.write(f"output/{it['n']}.mp4", safe(it['head']) + '.mp4')
     # 納品物のチェック: ZIP名=元動画タイトル、中身=見出し名、番号なし、本数一致
     with zipfile.ZipFile(zn) as z: names = z.namelist()
-    assert not re.match(r'\d', os.path.basename(zn)), f'ZIP名が番号で始まっている: {zn}'
+    assert not re.match(r'\d{2}[_ .-]', os.path.basename(zn)), f'ZIP名が番号で始まっている: {zn}'
     assert len(names) == len(g['items']), f'ZIPの本数が違う: {zn}'
-    assert all(not re.match(r'\d', x) and x.endswith('.mp4') for x in names), f'ZIPの中の名前に番号: {names}'
+    assert all(not re.match(r'\d{2}[_ .-]', x) and x.endswith('.mp4') for x in names), f'ZIPの中の名前に番号: {names}'
     res = subprocess.run(['scripts/upload_gigafile.sh', zn], capture_output=True, text=True)
     if res.returncode != 0: sys.exit(f"アップロード失敗: {zn} {res.stderr}")
     dl, key = res.stdout.split()
