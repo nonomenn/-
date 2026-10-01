@@ -84,6 +84,14 @@ for f in files:
     subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "error", "-y", "-i", f, "-t", f"{dur-3:.3f}", "-vf", "crop=1080:608:0:716", "-an", "-c:v", "libx264", "-preset", "ultrafast", tmp])
     if subprocess.run(["python3", "scripts/check_short.py", tmp], capture_output=True).returncode != 0:
         W("0.5秒未満だけ映るシーンあり → 画像で元動画の演出か確認すること")
+    # 冒頭・末尾0.3秒以内のテロップ切り替わり(字幕帯より上の吹き出し等は find_cuts で拾えない)
+    for t0, where in ((0, "冒頭"), (dur - 3.3, "末尾")):
+        raw = subprocess.run(["ffmpeg", "-nostdin", "-loglevel", "error", "-ss", f"{t0:.3f}", "-i", f, "-t", "0.3",
+                              "-vf", "crop=1080:330:0:994,scale=160:48,format=gray", "-f", "rawvideo", "-"], capture_output=True).stdout
+        fr = [raw[i:i + 160 * 48] for i in range(0, len(raw) - 160 * 48 + 1, 160 * 48)]
+        jumps = [sum(abs(x - y) for x, y in zip(fr[i], fr[i - 1])) / len(fr[i]) for i in range(1, len(fr))]
+        if jumps and max(jumps) > 12:
+            W(f"{where}0.3秒以内でテロップ/画面が切り替わる → 前後の文のテロップが映っていないか画像で確認すること")
     # ログ・概要欄
     c = rows.get(n)
     if not c: E("ログに行がない"); continue
