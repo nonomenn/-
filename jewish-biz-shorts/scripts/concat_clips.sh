@@ -2,11 +2,12 @@
 # 複数の名場面を1本につなぐ。使い方: concat_clips.sh <input.mp4> <output.mp4> "<開始> <終了>" "<開始> <終了>" ...
 # 例: scripts/concat_clips.sh input/a.mp4 output/tmp_a.mp4 "196.0 242.5" "980 1010"
 # 開始・終了は input/<名前>.cuts(元動画のカット位置。scripts/find_cuts.py で作る)に自動で合わせる。
-# 前後のシーンが一瞬映り込むのを防ぐため。cutsが無いときは秒数のまま切る(非推奨)
+# 前後のシーンが一瞬映り込むのを防ぐため。cutsが無いときは自動で検出してから切る
 set -euo pipefail
 IN="${1:?入力}"; OUT="${2:?出力}"; shift 2
 CUTS="${IN%.*}.cuts"
-[ -f "$CUTS" ] || echo "警告: $CUTS が無いので、カットに合わせずに切ります" >&2
+[ -f "$CUTS" ] || { echo "カット位置が未検出なので検出します: $CUTS" >&2; python3 "$(dirname "$0")/find_cuts.py" "$IN" >&2; }
+[ -f "$CUTS" ] || { echo "カット位置を検出できませんでした。中止します" >&2; exit 1; }
 SNAPPED=()
 for seg in "$@"; do
   set -- $seg
