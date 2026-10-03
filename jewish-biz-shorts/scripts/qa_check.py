@@ -55,9 +55,10 @@ for r in [l for l in log if l.startswith("| 20")]:
     rows[n] = c
 
 os.makedirs("output/qa", exist_ok=True)
-files = sorted(f for f in glob.glob("output/[0-9][0-9]_*.mp4") if a <= int(os.path.basename(f)[:2]) <= b)
+num = lambda f: int(re.match(r"\d+", os.path.basename(f)).group())
+files = sorted((f for f in glob.glob("output/[0-9]*_*.mp4") if a <= num(f) <= b), key=num)
 for f in files:
-    n = os.path.basename(f)[:-4]; tag = n[:2]
+    n = os.path.basename(f)[:-4]; tag = n.split("_")[0]
     def E(m): errs.append(f"{n}: {m}")
     def W(m): warns.append(f"{n}: {m}")
     # 形式

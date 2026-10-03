@@ -12,7 +12,7 @@ groups = {}
 for r in [l for l in log if l.startswith('| 20')]:
     c = [x.strip() for x in r.strip('|').split('|')]
     n = c[5].replace('output/', '').replace('.mp4', '')
-    if not (a <= int(n[:2]) <= b): continue
+    if not (a <= int(n.split("_")[0]) <= b): continue
     g = groups.setdefault(c[1], dict(title=c[1], url=c[2], items=[]))
     g['items'].append(dict(n=n, head=c[4].replace('/', '')))
 os.makedirs('output/deliver', exist_ok=True)
@@ -25,9 +25,9 @@ for g in groups.values():
             z.write(f"output/{it['n']}.mp4", safe(it['head']) + '.mp4')
     # 納品物のチェック: ZIP名=元動画タイトル、中身=見出し名、番号なし、本数一致
     with zipfile.ZipFile(zn) as z: names = z.namelist()
-    assert not re.match(r'\d{2}[_ .-]', os.path.basename(zn)), f'ZIP名が番号で始まっている: {zn}'
+    assert not re.match(r'\d{2,3}[_ .-]', os.path.basename(zn)), f'ZIP名が番号で始まっている: {zn}'
     assert len(names) == len(g['items']), f'ZIPの本数が違う: {zn}'
-    assert all(not re.match(r'\d{2}[_ .-]', x) and x.endswith('.mp4') for x in names), f'ZIPの中の名前に番号: {names}'
+    assert all(not re.match(r'\d{2,3}[_ .-]', x) and x.endswith('.mp4') for x in names), f'ZIPの中の名前に番号: {names}'
     res = subprocess.run(['scripts/upload_gigafile.sh', zn], capture_output=True, text=True)
     if res.returncode != 0: sys.exit(f"アップロード失敗: {zn} {res.stderr}")
     dl, key = res.stdout.split()
@@ -35,7 +35,7 @@ for g in groups.values():
     out += ["━━━━━━━━━━━━━━━━━━━━", f"【元動画】{g['title']}", f"元動画URL: {url}", f"ダウンロード: {dl}", ""]
     out += [f"  ・{it['head']}" for it in g['items']] + [""]
     mem.append(f"{g['title']} | {dl} | 削除キー {key}")
-assert not any(re.match(r'\s*・?\d{2}[._ ]', l) for l in out), '納品リストに番号が残っている'
+assert not any(re.match(r'\s*・?\d{2,3}[._ ]', l) for l in out), '納品リストに番号が残っている'
 tag = f"{a:02d}-{b:02d}"
 open(f'output/deliver/納品リスト_{tag}.txt', 'w', encoding='utf8').write('\n'.join(out))
 with open('output/deliver/納品記録_削除キー.txt', 'a', encoding='utf8') as f: f.write(f"\n[{tag}]\n" + '\n'.join(mem) + '\n')
