@@ -3,7 +3,7 @@
 # 使い方: scripts/build.sh <キー(input/<キー>.mp4)> <出力名> <YouTube動画ID> "<開始秒> <終了秒>[|<開始秒> <終了秒>...]" "<本編タイトル>" "<見出し1>" "<見出し2>" ["<見出し3>"] ["#追加タグ"]
 set -euo pipefail
 cd "$(dirname "$0")/.."
-K="$1"; N="$2"; YT="$3"; SEGS="$4"; TITLE="$5"; shift 5
+K="$1"; N="$2"; YT="$3"; SEGS="$4"; TITLE="${5//|/｜}"; shift 5
 H=(); TAG=""
 for a in "$@"; do case "$a" in \#*) TAG="$a";; *) H+=("$a");; esac; done
 IFS='|' read -r -a S <<< "$SEGS"
