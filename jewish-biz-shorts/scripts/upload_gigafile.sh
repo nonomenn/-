@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# ギガファイル便にアップロードしてダウンロードURLを表示する(保存期間 LIFETIME 日、既定30)
+# ギガファイル便にアップロードしてダウンロードURLを表示する(保存期間 LIFETIME 日、既定100)
 # 1回に送れるサイズに上限があるので、CHUNK_MB ごとに分けて送る
 # 使い方: scripts/upload_gigafile.sh <ファイル>
 set -euo pipefail
-F="${1:?ファイル}"; L="${LIFETIME:-30}"; MB="${CHUNK_MB:-50}"; J="$(mktemp)"; D="$(mktemp -d)"
+F="${1:?ファイル}"; L="${LIFETIME:-100}"; MB="${CHUNK_MB:-50}"; J="$(mktemp)"; D="$(mktemp -d)"
 trap 'rm -rf "$J" "$J.html" "$D"' EXIT
 curl -sS -c "$J" -b "$J" https://gigafile.nu/ -o "$J.html"
 S=$(grep -oE 'var server = "[^"]+"' "$J.html" | cut -d'"' -f2)
